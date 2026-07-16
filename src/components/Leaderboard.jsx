@@ -1,65 +1,93 @@
+// ...existing code...
 import { useEffect, useState } from "react";
-import supabase from "../../supabase";
+import supabase  from "../../supabase";
 
-function Leaderboard() {
+export default function Leaderboard() {
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
+    // ambil data awal
     const fetchPlayers = async () => {
       const { data, error } = await supabase
         .from("players")
         .select("*")
-        .order("score", { ascending: false })
-        .limit(1000);
-
-      if (!error) setPlayers(data);
+        .order("score", { ascending: false });
+      if (error) console.error(error);
+      else setPlayers(data);
     };
-
     fetchPlayers();
-    const intervalId = setInterval(fetchPlayers, 3000);
-    return () => clearInterval(intervalId);
+
+    // subscribe ke perubahan realtime
+    const channel = supabase
+      .channel("players-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "players" },
+        (payload) => {
+          console.log("Realtime update:", payload);
+          fetchPlayers(); // refresh data setiap ada perubahan
+        }
+      );
+
+    // subscribe (async) dan simpan reference
+    channel.subscribe();
+
+    // cleanup saat komponen unmount
+    return () => {
+      try {
+        // gunakan unsubscribe pada channel
+        channel.unsubscribe();
+      } catch (e) {
+        console.error("Failed to unsubscribe channel", e);
+      }
+    };
   }, []);
 
   return (
-    <div id="Leaderboard" className="flex flex-col items-center justify-center min-h-screen bg-linear-to-br from-[#0a1f44] to-[#1a2a6c] text-white font-poppins px-4 sm:px-6 lg:px-8">
-      <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-4 sm:p-6 max-w-full w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl border border-yellow-400">
-        <h2 className="text-center text-2xl sm:text-3xl font-bold text-yellow-300 mb-4 sm:mb-6 tracking-widest">
+    <div className="flex flex-col items-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] min-h-screen text-white p-6">
+      <div className="bg-[#142b5f] rounded-2xl border border-blue-400 shadow-lg p-6 w-full max-w-2xl">
+        <h1 className="text-3xl font-bold text-center mb-6 tracking-wide text-cyan-300">
           LEADERBOARD
-        </h2>
+        </h1>
 
-        <div className="space-y-3 max-h-[60vh] sm:max-h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-yellow-400">
-          {players.length === 0 ? (
-            <div className="flex items-center justify-center h-48 bg-white/10 rounded-lg px-4 py-6 text-center text-sm sm:text-base text-yellow-100">
-              Belum ada data leaderboard.
-            </div>
-          ) : (
-            players.map((player, i) => (
-              <div
-                key={player.id}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white/10 rounded-lg px-3 sm:px-4 py-3 hover:bg-white/20 transition gap-2"
+        {/* Jika tidak ada data tampilkan pesan */}
+        {players.length === 0 ? (
+          <div className="text-center py-8 text-cyan-200">Belum ada Pemain</div>
+        ) : (
+          <ul className="space-y-4">
+            {players.map((p, index) => (
+              <li
+                key={p.id}
+                className="flex items-center justify-between bg-[#1e3a8a] rounded-xl px-4 py-3 shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-6 text-center font-semibold">
-                    {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
-                  </span>
-                  <span className="text-base sm:text-lg font-medium truncate">{player.name}</span>
+                  {/* Medali untuk 3 besar */}
+                  {index === 0 && <span className="text-4xl">🥇</span>}
+                  {index === 1 && <span className="text-3xl">🥈</span>}
+                  {index === 2 && <span className="text-2xl">🥉</span>}
+                  {index > 2 && <span className="text-lg font-semibold">{index + 1}</span>}
+
+                  {/* Avatar */}
+                  <div className="w-10 h-10rounded-full">
+                    <img src="users.png" alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                  </div>
+
+                  {/* Nama pemain */}
+                  <div>
+                    <span className="font-semibold">{p.name}</span>
+                    <div className="text-sm text-cyan-200">Permainan Ke : {p["Jumlah Permainan"]}</div>
+                  </div>
                 </div>
 
+                {/* Skor */}
                 <div className="flex items-center gap-2">
-                  <span className="text-yellow-400 text-sm hidden xs:inline-block sm:inline-block">
-                    {"⭐".repeat(Math.max(0, Math.min(Math.floor(player.score / 500), 5)))}
-                  </span>
-                  <span className={player.score < 0 ? "text-red-400 font-bold" : "text-cyan-300 font-semibold"}>
-                    {player.score}
-                  </span>
+                  <span className="font-bold">Skor {p.score}</span>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
 }
-
-export default Leaderboard;

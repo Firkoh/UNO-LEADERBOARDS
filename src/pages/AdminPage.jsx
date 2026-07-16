@@ -16,6 +16,7 @@ function Count() {
   const storedState = getStoredState();
   const [step, setStep] = useState(storedState?.step ?? 'count');
   const [players, setPlayers] = useState(storedState?.players ?? 2);
+  const [games, setGames] = useState(storedState?.games ?? 1);
   const [names, setNames] = useState(storedState?.names ?? []);
   const [scores, setScores] = useState(storedState?.scores ?? []);
   const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
@@ -76,7 +77,7 @@ function Count() {
       // Insert only new players with initial score 0
       const rowsToInsert = playerNames
         .filter((name) => !existingNames.has(name) && name.trim() !== '')
-        .map((name) => ({ name, score: 0 }));
+        .map((name) => ({ name, score: 0, "Jumlah Permainan": 0 }));
 
       if (rowsToInsert.length === 0) return;
 
@@ -97,6 +98,7 @@ function Count() {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.players !== undefined) setPlayers(parsed.players);
+        if (parsed.games !== undefined) setGames(parsed.games);
         if (parsed.names && parsed.names.length > 0) setNames(parsed.names);
         if (parsed.scores && parsed.scores.length > 0) setScores(parsed.scores);
         if (parsed.currentIndex !== undefined) setCurrentIndex(parsed.currentIndex);
@@ -113,6 +115,7 @@ function Count() {
     try {
       const payload = {
         players,
+        games,
         names,
         scores,
         currentIndex,
@@ -148,16 +151,18 @@ function Count() {
   const handleAddScore = async (index, amount) => {
     const playerName = (names[index] || `Pemain ${index + 1}`).trim();
     let currentScore = scores[index] ?? 0;
+    let currentGames = 0;
 
     try {
       const { data: dbPlayer, error: fetchErr } = await supabase
         .from("players")
-        .select("score")
+        .select('score, "Jumlah Permainan"')
         .eq("name", playerName)
         .maybeSingle();
 
-      if (!fetchErr && dbPlayer?.score !== undefined) {
-        currentScore = dbPlayer.score;
+      if (!fetchErr && dbPlayer) {
+        if (dbPlayer.score !== undefined) currentScore = dbPlayer.score;
+        if (dbPlayer["Jumlah Permainan"] !== undefined) currentGames = dbPlayer["Jumlah Permainan"];
       }
     } catch (fetchError) {
       console.error("Gagal memuat skor dari database:", fetchError.message);
@@ -175,15 +180,22 @@ function Count() {
       .upsert({ name: playerName, score: nextScore }, { onConflict: "name" });
 
     if (error) console.error("Gagal update skor:", error.message);
+
+    const { error: gamesError } = await supabase
+      .from("players")
+      .update({ "Jumlah Permainan": currentGames + 1 })
+      .eq("name", playerName);
+
+    if (gamesError) console.error("Gagal update Jumlah Permainan:", gamesError.message);
   };
 
   const scoreOptions = (() => {
     let positives;
     if (players === 2) positives = [0, 2];
     else if (players === 3) positives = [0, 1, 2];
-    else positives = Array.from({ length: Math.max(0, players - 1) }, (_, i) => 2 * (i + 1));
+    else positives = [0, ...Array.from({ length: Math.max(0, players - 1) }, (_, i) => 2 * (i + 1))];
 
-    const negMap = { 2: -3, 3: -4, 4: -5, 5: -6, 6: -7 };
+    const negMap = { 2: -3, 3: -4, 4: -5, 5: -6, 7: -10 };
     const negative = negMap[players];
 
     if (negative !== undefined) return [negative, ...positives];
@@ -194,6 +206,21 @@ function Count() {
     setStep('count');
     setCurrentIndex(0);
     setCurrentName('');
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('uno_count_state');
+      setStep('count');
+      setPlayers(2);
+      setGames(1);
+      setNames([]);
+      setScores([]);
+      setCurrentIndex(0);
+      setCurrentName('');
+    } catch (e) {
+      console.error('Gagal logout:', e);
+    }
   };
 
   const handleRestartGame = async () => {
@@ -224,6 +251,15 @@ function Count() {
     setNames(playersData.map((p) => p.name));
     setScores(playersData.map((p) => p.score));
     setStep("done");
+  };
+
+  const deleteAllPlayers = async () => {
+    const { error } = await supabase
+      .from("players")
+      .delete()
+      .neq("id", -1);
+
+    if (error) console.log(error);
   };
 
   return (
@@ -294,7 +330,7 @@ function Count() {
                   ) : (
                     <span className="text-yellow-400 text-sm">{"⭐".repeat(Math.max(0, Math.min(Math.floor((scores[i] ?? 0) / 500), 5)))}</span>
                   )}
-                  <span className="text-cyan-300 font-semibold">{scores[i] ?? 0}</span>
+                  <span className="text-yellow-300 font-semibold">{scores[i] ?? 0}</span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -310,6 +346,13 @@ function Count() {
                       {amount > 0 ? `Tambah +${amount}` : `Kurangi ${amount}`}
                     </button>
                   ))}
+                <button
+                  type="button"
+                  onClick={() => handleAddScore(i, 0)}
+                  className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                 Kalah
+                </button>
               </div>
             </div>
           ))}
@@ -350,6 +393,7 @@ function Count() {
           </div>
         </div>
       )}
+    
       </div>
     </div>
   );

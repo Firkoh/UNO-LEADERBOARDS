@@ -21,7 +21,11 @@ const Header = () => {
   return (
     <header className="bg-slate-900 text-white shadow-md">
       <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="text-lg md:text-2xl font-semibold">UNO</div>
+        <div className="flex items-center gap-3">
+          <img src="/public/Uno.png" alt="UNO icon" className="w-8 h-8 md:w-10 md:h-10" />
+          <div className="text-lg md:text-2xl font-semibold">UNO SCORE</div>
+        </div>
+        
         
         {/* Hamburger Menu Button */}
         <button
@@ -39,8 +43,9 @@ const Header = () => {
             <a href="/" className="hover:text-yellow-300 transition-colors duration-150">Home</a>
           </li>
           <li>
-            <a href="#Leaderboard" className="hover:text-yellow-300 transition-colors duration-150">Leaderboard</a>
+            <a href="/Login" className="hover:text-yellow-300 transition-colors duration-150">Login</a>
           </li>
+        
         </ul>
 
         {/* Mobile Menu */}

@@ -1,19 +1,36 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import Header from '../src/components/Header'
-import Count from '../src/components/Count'
-import Leaderboard from '../src/components/Leaderboard'
-import './App.css'
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import  supabase  from "../supabase";
+import Header from "./components/Header";
+import Leaderboard from "./components/Leaderboard";
+import Login from "./pages/Login";
+import AdminPage from "./pages/AdminPage";
+import "./App.css";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Footer from "./components/Footer";
 
 function App() {
-  return (
-    <>
-      <Header />
-      <Count />
-      <Leaderboard />
-    </>
-  );
-};
 
-export default App
+  return (
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/*" element={<Leaderboard />} />
+        <Route path="/login" element={<Login />} />
+         <Route
+    path="/admin"
+    element={
+      <ProtectedRoute>
+        <AdminPage />
+  
+        <Leaderboard />
+      </ProtectedRoute>
+    }
+  />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  );
+}
+
+export default App;
