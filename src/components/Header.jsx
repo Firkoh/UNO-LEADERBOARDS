@@ -3,21 +3,6 @@ import React, { useState, useEffect } from 'react';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => {
-      if (window.scrollY === 0) {
-        const newUrl = window.location.pathname + window.location.search;
-        window.history.replaceState(null, '', newUrl);
-      } else {
-        const newUrl = window.location.pathname + window.location.search + '#Leaderboard';
-        window.history.replaceState(null, '', newUrl);
-      }
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
     <header className="bg-slate-900 text-white shadow-md">
       <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">

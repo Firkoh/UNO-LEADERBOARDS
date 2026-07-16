@@ -8,6 +8,7 @@ import AdminPage from "./pages/AdminPage";
 import "./App.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer";
+import EditLeaderBoard from "./pages/EditLeaderBoard";
 
 function App() {
 
@@ -23,7 +24,7 @@ function App() {
       <ProtectedRoute>
         <AdminPage />
   
-        <Leaderboard />
+        <EditLeaderBoard />
       </ProtectedRoute>
     }
   />

@@ -22,23 +22,42 @@ function Count() {
   const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
   const [currentName, setCurrentName] = useState(storedState?.currentName ?? '');
 
+
+const syncPlayers = async () => {
+  const { data, error } = await supabase
+    .from("players")
+    .select("name, score")
+    .order("name");
+
+  if (error) return;
+
+  setNames(data.map((p) => p.name));
+  setScores(data.map((p) => p.score));
+  setPlayers(data.length);
+
+  if (data.length === 0) {
+    setStep("count");
+  }
+};
+
   const startInput = async () => {
     try {
+      const selectedPlayers = Number(players) || 2;
       const { data: dbPlayers, error } = await supabase
         .from("players")
         .select("name,score")
         .order("name", { ascending: true })
-        .limit(players);
+        .limit(selectedPlayers);
 
       if (error) {
         console.error("Gagal memuat pemain dari database:", error.message);
       }
 
-      const nextNames = Array(players).fill('');
-      const nextScores = Array(players).fill(0);
+      const nextNames = Array(selectedPlayers).fill('');
+      const nextScores = Array(selectedPlayers).fill(0);
 
       if (dbPlayers && dbPlayers.length > 0) {
-        dbPlayers.slice(0, players).forEach((player, idx) => {
+        dbPlayers.slice(0, selectedPlayers).forEach((player, idx) => {
           nextNames[idx] = player.name || '';
           nextScores[idx] = player.score ?? 0;
         });
@@ -51,8 +70,9 @@ function Count() {
       setStep('names');
     } catch (error) {
       console.error("Gagal memulai input dari database:", error);
-      setNames(Array(players).fill(''));
-      setScores(Array(players).fill(0));
+      const selectedPlayers = Number(players) || 2;
+      setNames(Array(selectedPlayers).fill(''));
+      setScores(Array(selectedPlayers).fill(0));
       setCurrentIndex(0);
       setCurrentName('');
       setStep('names');
@@ -90,6 +110,30 @@ function Count() {
       console.error('Gagal menyimpan pemain:', e);
     }
   };
+
+useEffect(() => {
+  syncPlayers();
+
+  const channel = supabase.channel("players-admin");
+
+  channel.on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "players",
+    },
+    () => {
+      syncPlayers();
+    }
+  );
+
+  channel.subscribe();
+
+  return () => {
+    channel.unsubscribe();
+  };
+}, []);
 
   // Load persisted state from localStorage on mount
   useEffect(() => {
@@ -196,13 +240,14 @@ if (amount >= 0) {
   };
 
   const scoreOptions = (() => {
-    let positives;
-    if (players === 2) positives = [0, 2];
-    else if (players === 3) positives = [0, 1, 2];
-    else positives = [0, ...Array.from({ length: Math.max(0, players - 1) }, (_, i) => 2 * (i + 1))];
-
+    const playerCount = Math.max(2, names.length, Number(players) || 2);
     const negMap = { 2: -3, 3: -4, 4: -5, 5: -6, 7: -10 };
-    const negative = negMap[players];
+    const negative = negMap[playerCount];
+
+    let positives;
+    if (playerCount === 2) positives = [2];
+    else if (playerCount === 3) positives = [1, 2];
+    else positives = Array.from({ length: Math.max(0, playerCount - 1) }, (_, i) => 2 * (i + 1));
 
     if (negative !== undefined) return [negative, ...positives];
     return positives;
@@ -327,7 +372,7 @@ if (amount >= 0) {
         <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="mb-4 text-xl font-semibold text-slate-800">Daftar pemain dan skor</h3>
           {names.map((playerName, i) => (
-            <div key={playerName || i} className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div key={`${i}-${playerName}`} className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="mb-3 text-base text-slate-800 flex items-center justify-between">
                 <span>{i + 1}. {playerName || `Pemain ${i + 1}`}</span>
                 <div className="flex items-center gap-2">
