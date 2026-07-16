@@ -181,12 +181,18 @@ function Count() {
 
     if (error) console.error("Gagal update skor:", error.message);
 
-    const { error: gamesError } = await supabase
-      .from("players")
-      .update({ "Jumlah Permainan": currentGames + 1 })
-      .eq("name", playerName);
+if (amount >= 0) {
+  const { error: gamesError } = await supabase
+    .from("players")
+    .update({
+      "Jumlah Permainan": currentGames + 1,
+    })
+    .eq("name", playerName);
 
-    if (gamesError) console.error("Gagal update Jumlah Permainan:", gamesError.message);
+  if (gamesError) {
+    console.error("Gagal update Jumlah Permainan:", gamesError.message);
+  }
+}
   };
 
   const scoreOptions = (() => {
