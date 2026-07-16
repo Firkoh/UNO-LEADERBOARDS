@@ -2,42 +2,29 @@ import { useState, useEffect } from 'react';
 import supabase from "../../supabase";
 
 function Count() {
-  const getStoredState = () => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const raw = localStorage.getItem('uno_count_state');
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      console.error('Gagal memuat state dari localStorage', e);
-      return null;
-    }
-  };
 
-  const storedState = getStoredState();
-  const [step, setStep] = useState(storedState?.step ?? 'count');
-  const [players, setPlayers] = useState(storedState?.players ?? 2);
-  const [games, setGames] = useState(storedState?.games ?? 1);
-  const [names, setNames] = useState(storedState?.names ?? []);
-  const [scores, setScores] = useState(storedState?.scores ?? []);
-  const [currentIndex, setCurrentIndex] = useState(storedState?.currentIndex ?? 0);
-  const [currentName, setCurrentName] = useState(storedState?.currentName ?? '');
+const [step, setStep] = useState("count");
+const [players, setPlayers] = useState(2);
+const [games, setGames] = useState(1);
+const [names, setNames] = useState([]);
+const [scores, setScores] = useState([]);
+const [currentIndex, setCurrentIndex] = useState(0);
+const [currentName, setCurrentName] = useState("");
 
 
 const syncPlayers = async () => {
   const { data, error } = await supabase
     .from("players")
     .select("name, score")
-    .order("name");
+    .order("name", { ascending: true });
 
-  if (error) return;
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   setNames(data.map((p) => p.name));
   setScores(data.map((p) => p.score));
-  setPlayers(data.length);
-
-  if (data.length === 0) {
-    setStep("count");
-  }
 };
 
   const startInput = async () => {
@@ -110,10 +97,7 @@ const syncPlayers = async () => {
       console.error('Gagal menyimpan pemain:', e);
     }
   };
-
-useEffect(() => {
-  syncPlayers();
-
+  useEffect(() => {
   const channel = supabase.channel("players-admin");
 
   channel.on(
@@ -124,53 +108,32 @@ useEffect(() => {
       table: "players",
     },
     () => {
-      syncPlayers();
+      if (step === "done") {
+        fetchPlayers();
+      }
     }
   );
 
   channel.subscribe();
 
-  return () => {
-    channel.unsubscribe();
-  };
-}, []);
+  return () => channel.unsubscribe();
+}, [step]);
 
-  // Load persisted state from localStorage on mount
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('uno_count_state');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.players !== undefined) setPlayers(parsed.players);
-        if (parsed.games !== undefined) setGames(parsed.games);
-        if (parsed.names && parsed.names.length > 0) setNames(parsed.names);
-        if (parsed.scores && parsed.scores.length > 0) setScores(parsed.scores);
-        if (parsed.currentIndex !== undefined) setCurrentIndex(parsed.currentIndex);
-        if (parsed.currentName !== undefined) setCurrentName(parsed.currentName);
-        if (parsed.step) setStep(parsed.step);
-      }
-    } catch (e) {
-      console.error('Gagal memuat state dari localStorage', e);
-    }
-  }, []);
+const fetchPlayers = async () => {
+  const { data, error } = await supabase
+    .from("players")
+    .select("name, score")
+    .order("name", { ascending: true });
 
-  // Persist relevant state to localStorage so refresh or "mulai ulang" won't clear
-  useEffect(() => {
-    try {
-      const payload = {
-        players,
-        games,
-        names,
-        scores,
-        currentIndex,
-        currentName,
-        step,
-      };
-      localStorage.setItem('uno_count_state', JSON.stringify(payload));
-    } catch (e) {
-      console.error('Gagal menyimpan state ke localStorage', e);
-    }
-  }, [players, names, scores, currentIndex, currentName, step]);
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setNames(data.map((p) => p.name));
+  setScores(data.map((p) => p.score));
+  setPlayers(data.length);
+};
 
   const handleNext = async () => {
     const nextNames = [...names];
@@ -179,10 +142,12 @@ useEffect(() => {
     nextNames[currentIndex] = currentPlayerName;
     setNames(nextNames);
 
+
     const nextIndex = currentIndex + 1;
     if (nextIndex >= players) {
-      await savePlayersToDB(nextNames);
-      setStep('done');
+     await savePlayersToDB(nextNames);
+   await fetchPlayers();
+setStep("done");
       setCurrentIndex(players);
       setCurrentName('');
       return;
@@ -259,20 +224,15 @@ if (amount >= 0) {
     setCurrentName('');
   };
 
-  const handleLogout = () => {
-    try {
-      localStorage.removeItem('uno_count_state');
-      setStep('count');
-      setPlayers(2);
-      setGames(1);
-      setNames([]);
-      setScores([]);
-      setCurrentIndex(0);
-      setCurrentName('');
-    } catch (e) {
-      console.error('Gagal logout:', e);
-    }
-  };
+ const handleLogout = () => {
+  setStep("count");
+  setPlayers(2);
+  setGames(1);
+  setNames([]);
+  setScores([]);
+  setCurrentIndex(0);
+  setCurrentName("");
+};
 
   const handleRestartGame = async () => {
     // 1️⃣ Reset skor di database Supabase
@@ -301,6 +261,7 @@ if (amount >= 0) {
     const playersData = data || [];
     setNames(playersData.map((p) => p.name));
     setScores(playersData.map((p) => p.score));
+    setPlayers(playersData.length);
     setStep("done");
   };
 
