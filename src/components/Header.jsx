@@ -36,7 +36,7 @@ const Header = () => {
               <a href="/" className="block text-base sm:text-lg hover:text-yellow-300 transition-colors duration-150">Home</a>
             </li>
             <li>
-              <a href="#Leaderboard" className="block text-base sm:text-lg hover:text-yellow-300 transition-colors duration-150">Leaderboard</a>
+              <a href="/login" className="block text-base sm:text-lg hover:text-yellow-300 transition-colors duration-150">Login</a>
             </li>
           </ul>
         )}
