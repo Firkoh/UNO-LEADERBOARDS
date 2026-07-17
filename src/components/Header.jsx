@@ -7,7 +7,7 @@ const Header = () => {
     <header className="sticky top-0 bg-slate-900 text-white shadow-md z-50">
       <nav className="max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <img src="/public/Uno.png" alt="UNO icon" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10" />
+          <img src="/Uno.png" alt="UNO icon" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10" />
           <div className="text-base sm:text-lg md:text-2xl font-semibold">UNO SCORE</div>
         </div>
 
