@@ -52,10 +52,9 @@ export default function Login() {
 
         <div className="space-y-5">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Email Admin</span>
+            <span className="text-sm font-medium text-slate-700">Username</span>
             <input
-              type="email"
-              placeholder="adminuno@gmail.com"
+              type="text"
               className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
