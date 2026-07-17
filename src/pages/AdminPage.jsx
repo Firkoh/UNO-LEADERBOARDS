@@ -220,12 +220,12 @@ setStep("done");
 
   const scoreOptions = (() => {
     const playerCount = Math.max(2, names.length, Number(players) || 2);
-    const negMap = { 2: -3, 3: -4, 4: -5, 5: -6, 7: -10 };
+    const negMap = { 2: -3, 4: -5, 5: -6, 7: -10 };
     const negative = negMap[playerCount];
 
     let positives;
     if (playerCount === 2) positives = [2];
-    else if (playerCount === 3) positives = [1, 2];
+    else if (playerCount === 3) positives = [4, 2];
     else positives = Array.from({ length: Math.max(0, playerCount - 1) }, (_, i) => 2 * (i + 1));
 
     if (negative !== undefined) return [negative, ...positives];
