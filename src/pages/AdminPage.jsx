@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 
 import supabase from "../../supabase";
 
@@ -187,6 +188,33 @@ setStep("done");
     const nextScore = currentScore + amount;
     const nextGames = amount >= 0 ? currentGames + 1 : currentGames;
 
+    let actionTitle = "";
+    let actionMessage = "";
+    
+    if (amount > 0) {
+      actionTitle = "Tambah Skor";
+      actionMessage = `Tambah ${amount} poin untuk ${playerName}?`;
+    } else if (amount < 0) {
+      actionTitle = "Kurangi Skor";
+      actionMessage = `Kurangi ${Math.abs(amount)} poin untuk ${playerName}?`;
+    } else {
+      actionTitle = "Kalah";
+      actionMessage = `Tandai ${playerName} kalah?`;
+    }
+
+    const result = await Swal.fire({
+      title: actionTitle,
+      text: actionMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#fbbf24",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Ya",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
+
     setScores((prev) => {
       const next = [...prev];
       next[index] = nextScore;
@@ -202,7 +230,11 @@ setStep("done");
       .from("players")
       .upsert({ name: playerName, score: nextScore }, { onConflict: "name" });
 
-    if (error) console.error("Gagal update skor:", error.message);
+    if (error) {
+      console.error("Gagal update skor:", error.message);
+      Swal.fire("Error", "Gagal update skor", "error");
+      return;
+    }
 
     if (amount >= 0) {
       const { error: gamesError } = await supabase
@@ -216,6 +248,8 @@ setStep("done");
         console.error("Gagal update Jumlah Permainan:", gamesError.message);
       }
     }
+
+    Swal.fire("Berhasil", `Skor ${playerName} berhasil diperbarui`, "success");
   };
 
   const scoreOptions = (() => {
@@ -233,6 +267,19 @@ setStep("done");
   })();
 
   const resetAll = async () => {
+    const result = await Swal.fire({
+      title: "Konfirmasi",
+      text: "Apakah Anda yakin ingin memulai ulang? Semua input saat ini akan dibatalkan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#fbbf24",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Ya, mulai ulang",
+      cancelButtonText: "Batal",
+    });
+
+    if (!result.isConfirmed) return;
+
     setStep('count');
     setCurrentIndex(0);
     setCurrentName('');
