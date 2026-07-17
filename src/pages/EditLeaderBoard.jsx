@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import supabase from "../../supabase";
+import Swal from "sweetalert2";
 
 export default function EditLeaderBoard() {
   const [players, setPlayers] = useState([]);
@@ -86,20 +87,31 @@ export default function EditLeaderBoard() {
   };
 
   const deleteAllPlayers = async () => {
-    if (!confirm("Hapus seluruh pemain?")) return;
+    const result = await Swal.fire({
+      title: "Hapus seluruh pemain?",
+      text: "Tindakan ini tidak dapat dibatalkan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus semua",
+      cancelButtonText: "Batal",
+    });
+    if (!result.isConfirmed) return;
 
     if (!players || players.length === 0) {
-      // nothing to delete
       setPlayers([]);
       cancelEditing();
       return;
     }
 
-    // delete by ids to ensure proper delete operation
     const ids = players.map((p) => (typeof p.id === "number" ? p.id : Number(p.id)));
     const { error } = await supabase.from("players").delete().in("id", ids);
     if (error) {
       console.error("Delete all failed:", error);
+      await Swal.fire({
+        title: "Gagal menghapus semua pemain",
+        text: error.message,
+        icon: "error",
+      });
       return;
     }
     setPlayers([]);
@@ -160,16 +172,21 @@ export default function EditLeaderBoard() {
                     <button
                       className="rounded-lg bg-red-500 text-white px-3 py-1 text-sm font-semibold hover:bg-red-400"
                       onClick={async () => {
-                        if (!confirm(`Hapus pemain ${p.name}?`)) return;
+                        const result = await Swal.fire({
+                          title: `Hapus pemain ${p.name}?`,
+                          text: "Tindakan ini tidak dapat dibatalkan.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Ya, hapus",
+                          cancelButtonText: "Batal",
+                        });
+                        if (!result.isConfirmed) return;
                         const idForDb = Number(p.id) || p.id;
-                        const { error, data } = await supabase
-                          .from("players")
-                          .delete()
-                          .eq("id", idForDb);
+                        const { error } = await supabase.from("players").delete().eq("id", idForDb);
                         if (error) {
                           console.error("Delete failed:", error);
+                          await Swal.fire({ title: "Gagal menghapus pemain", text: error.message, icon: "error" });
                         } else {
-                          // if deletion succeeded, remove from local state
                           setPlayers((current) => current.filter((pl) => pl.id !== p.id));
                         }
                       }}

@@ -1,20 +1,37 @@
 import { useState } from "react";
 import supabase from "../../supabase";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Login() {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Swal.fire({
+        title: "Login Gagal",
+        text: "Email dan password wajib diisi.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email + "@gmail.com",
       password,
     });
 
     if (error) {
-      alert(error.message);
+      Swal.fire({
+        title: "Login Gagal",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
       return;
     }
 

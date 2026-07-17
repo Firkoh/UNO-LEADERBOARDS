@@ -21,8 +21,8 @@ function App() {
     path="/admin"
     element={
       <ProtectedRoute>
-        <EditLeaderBoard />
         <AdminPage />
+        <EditLeaderBoard />
       </ProtectedRoute>
     }
   />
