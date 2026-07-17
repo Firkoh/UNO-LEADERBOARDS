@@ -44,9 +44,11 @@ export default function Leaderboard() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] min-h-screen text-white p-6">
-      <div className="bg-[#142b5f] rounded-2xl border border-blue-400 shadow-lg p-6 w-full max-w-2xl">
-        <h1 className="text-3xl font-bold text-center mb-6 tracking-wide text-cyan-300">
+
+    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] text-white p-4 sm:p-6">
+
+      <div className="w-full max-w-full rounded-2xl border border-blue-400 bg-[#142b5f] px-4 py-6 shadow-lg sm:px-6 md:px-8 lg:px-10 xl:px-12">
+        <h1 className="text-3xl font-bold text-center tracking-wide text-cyan-300 sm:text-4xl mb-6">
           LEADERBOARD
         </h1>
 
@@ -58,29 +60,31 @@ export default function Leaderboard() {
             {players.map((p, index) => (
               <li
                 key={p.id}
-                className="flex items-center justify-between bg-[#1e3a8a] rounded-xl px-4 py-3 shadow-md"
+                className="flex flex-col gap-4 rounded-xl bg-[#1e3a8a] px-4 py-4 shadow-md sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4"
               >
-                <div className="flex items-center gap-3">
-                  {/* Medali untuk 3 besar */}
-                  {index === 0 && <span className="text-4xl">🥇</span>}
-                  {index === 1 && <span className="text-3xl">🥈</span>}
-                  {index === 2 && <span className="text-2xl">🥉</span>}
-                  {index > 2 && <span className="text-lg font-semibold">{index + 1}</span>}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="flex items-center gap-3">
+                    {/* Medali untuk 3 besar */}
+                    {index === 0 && <span className="text-4xl">🥇</span>}
+                    {index === 1 && <span className="text-3xl">🥈</span>}
+                    {index === 2 && <span className="text-2xl">🥉</span>}
+                    {index > 2 && <span className="text-lg font-semibold">{index + 1}</span>}
+                  </div>
 
                   {/* Avatar */}
-                  <div className="w-10 h-10rounded-full">
-                    <img src="users.png" alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <img src="users.png" alt="Avatar" className="w-full h-full object-cover" />
                   </div>
 
                   {/* Nama pemain */}
-                  <div>
-                    <span className="font-semibold">{p.name}</span>
+                  <div className="min-w-0">
+                    <span className="font-semibold truncate block">{p.name}</span>
                     <div className="text-sm text-cyan-200">Permainan Ke : {p["Jumlah Permainan"]}</div>
                   </div>
                 </div>
 
                 {/* Skor */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-start gap-2 sm:justify-end">
                   <span className="font-bold">Skor {p.score}</span>
                 </div>
               </li>
@@ -88,6 +92,8 @@ export default function Leaderboard() {
           </ul>
         )}
       </div>
+
     </div>
+
   );
 }

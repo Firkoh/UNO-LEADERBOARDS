@@ -11,7 +11,6 @@ import Footer from "./components/Footer";
 import EditLeaderBoard from "./pages/EditLeaderBoard";
 
 function App() {
-
   return (
     <BrowserRouter>
       <Header />
@@ -22,9 +21,8 @@ function App() {
     path="/admin"
     element={
       <ProtectedRoute>
-        <AdminPage />
-  
         <EditLeaderBoard />
+        <AdminPage />
       </ProtectedRoute>
     }
   />

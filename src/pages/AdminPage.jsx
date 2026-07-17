@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import supabase from "../../supabase";
 
 function Count() {
@@ -8,6 +9,7 @@ const [players, setPlayers] = useState(2);
 const [games, setGames] = useState(1);
 const [names, setNames] = useState([]);
 const [scores, setScores] = useState([]);
+const [gamesPlayed, setGamesPlayed] = useState([]);
 const [currentIndex, setCurrentIndex] = useState(0);
 const [currentName, setCurrentName] = useState("");
 
@@ -15,7 +17,7 @@ const [currentName, setCurrentName] = useState("");
 const syncPlayers = async () => {
   const { data, error } = await supabase
     .from("players")
-    .select("name, score")
+    .select('name, score, "Jumlah Permainan"')
     .order("name", { ascending: true });
 
   if (error) {
@@ -25,6 +27,7 @@ const syncPlayers = async () => {
 
   setNames(data.map((p) => p.name));
   setScores(data.map((p) => p.score));
+  setGamesPlayed(data.map((p) => p["Jumlah Permainan"] ?? 0));
 };
 
   const startInput = async () => {
@@ -42,16 +45,19 @@ const syncPlayers = async () => {
 
       const nextNames = Array(selectedPlayers).fill('');
       const nextScores = Array(selectedPlayers).fill(0);
+      const nextGames = Array(selectedPlayers).fill(0);
 
       if (dbPlayers && dbPlayers.length > 0) {
         dbPlayers.slice(0, selectedPlayers).forEach((player, idx) => {
           nextNames[idx] = player.name || '';
           nextScores[idx] = player.score ?? 0;
+          nextGames[idx] = player["Jumlah Permainan"] ?? 0;
         });
       }
 
       setNames(nextNames);
       setScores(nextScores);
+      setGamesPlayed(nextGames);
       setCurrentIndex(0);
       setCurrentName(nextNames[0] || '');
       setStep('names');
@@ -122,7 +128,7 @@ const syncPlayers = async () => {
 const fetchPlayers = async () => {
   const { data, error } = await supabase
     .from("players")
-    .select("name, score")
+    .select('name, score, "Jumlah Permainan"')
     .order("name", { ascending: true });
 
   if (error) {
@@ -132,6 +138,7 @@ const fetchPlayers = async () => {
 
   setNames(data.map((p) => p.name));
   setScores(data.map((p) => p.score));
+  setGamesPlayed(data.map((p) => p["Jumlah Permainan"] ?? 0));
   setPlayers(data.length);
 };
 
@@ -178,9 +185,16 @@ setStep("done");
     }
 
     const nextScore = currentScore + amount;
+    const nextGames = amount >= 0 ? currentGames + 1 : currentGames;
+
     setScores((prev) => {
       const next = [...prev];
       next[index] = nextScore;
+      return next;
+    });
+    setGamesPlayed((prev) => {
+      const next = [...prev];
+      next[index] = nextGames;
       return next;
     });
 
@@ -190,18 +204,18 @@ setStep("done");
 
     if (error) console.error("Gagal update skor:", error.message);
 
-if (amount >= 0) {
-  const { error: gamesError } = await supabase
-    .from("players")
-    .update({
-      "Jumlah Permainan": currentGames + 1,
-    })
-    .eq("name", playerName);
+    if (amount >= 0) {
+      const { error: gamesError } = await supabase
+        .from("players")
+        .update({
+          "Jumlah Permainan": nextGames,
+        })
+        .eq("name", playerName);
 
-  if (gamesError) {
-    console.error("Gagal update Jumlah Permainan:", gamesError.message);
-  }
-}
+      if (gamesError) {
+        console.error("Gagal update Jumlah Permainan:", gamesError.message);
+      }
+    }
   };
 
   const scoreOptions = (() => {
@@ -276,8 +290,8 @@ if (amount >= 0) {
 
   return (
     <div draggable="false" className="min-h-screen bg-linear-to-br from-[#0a1f44] to-[#1a2a6c] px-4 py-10 sm:px-6 lg:px-8 text-white">
-      <div className="mx-auto w-full max-w-2xl">
-        <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Masukkan nama pemain satu per satu</h2>
+      <div className="mx-auto w-full max-w-4xl">
+        <h2 className="text-2xl font-semibold mb-4 text-yellow-300 sm:text-3xl">Masukkan nama pemain satu per satu</h2>
 
         {step === 'count' && (
         <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -299,7 +313,7 @@ if (amount >= 0) {
             <button
               type="button"
               onClick={startInput}
-              className="inline-flex items-center justify-center rounded-xl bg-yellow-600 px-4 py-2 text-white transition hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-yellow-600 px-4 py-2 text-white transition hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               Mulai
             </button>
@@ -321,7 +335,7 @@ if (amount >= 0) {
             <button
               type="button"
               onClick={handleNext}
-              className="inline-flex items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
             >
               Simpan
             </button>
@@ -333,16 +347,17 @@ if (amount >= 0) {
         <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="mb-4 text-xl font-semibold text-slate-800">Daftar pemain dan skor</h3>
           {names.map((playerName, i) => (
-            <div key={`${i}-${playerName}`} className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="mb-3 text-base text-slate-800 flex items-center justify-between">
+            <div key={`${i}-${playerName}`} className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
+              <div className="mb-3 text-base text-slate-800 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <span>{i + 1}. {playerName || `Pemain ${i + 1}`}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {(scores[i] ?? 0) < 0 ? (
                     <span className="text-red-400 font-bold">❌</span>
                   ) : (
                     <span className="text-yellow-400 text-sm">{"⭐".repeat(Math.max(0, Math.min(Math.floor((scores[i] ?? 0) / 500), 5)))}</span>
                   )}
-                  <span className="text-yellow-300 font-semibold">{scores[i] ?? 0}</span>
+                  <span className="text-gray-700 font-semibold">Skor:{scores[i] ?? 0}</span>
+                  <span className="text-gray-700 font-semibold">Permainan:{gamesPlayed[i] ?? 0}</span>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -353,7 +368,7 @@ if (amount >= 0) {
                       key={amount}
                       type="button"
                       onClick={() => handleAddScore(i, amount)}
-                      className="rounded-xl bg-yellow-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                      className="w-full sm:w-auto rounded-xl bg-yellow-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                     >
                       {amount > 0 ? `Tambah +${amount}` : `Kurangi ${amount}`}
                     </button>
@@ -361,44 +376,48 @@ if (amount >= 0) {
                 <button
                   type="button"
                   onClick={() => handleAddScore(i, 0)}
-                  className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  className="w-full sm:w-auto rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                  Kalah
                 </button>
               </div>
             </div>
           ))}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={async () => {
                 try {
                   const { data: dbPlayers, error } = await supabase
                     .from("players")
-                    .select("name,score")
+                    .select('name, score, "Jumlah Permainan"')
                     .in("name", names.filter((n) => n.trim() !== ""));
 
                   if (!error && dbPlayers) {
                     const playerScores = {};
+                    const playerGames = {};
                     dbPlayers.forEach((p) => {
                       playerScores[p.name] = p.score ?? 0;
+                      playerGames[p.name] = p["Jumlah Permainan"] ?? 0;
                     });
 
                     const updatedScores = names.map((name, i) => playerScores[name] ?? scores[i] ?? 0);
+                    const updatedGames = names.map((name, i) => playerGames[name] ?? gamesPlayed[i] ?? 0);
                     setScores(updatedScores);
+                    setGamesPlayed(updatedGames);
                   }
                 } catch (e) {
                   console.error("Gagal memuat skor dari database:", e);
                 }
               }}
-              className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               Muat ulang skor
             </button>
             <button
               type="button"
               onClick={resetAll}
-              className="inline-flex items-center justify-center rounded-xl bg-slate-200 px-4 py-2 text-slate-900 transition hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-200 px-4 py-2 text-slate-900 transition hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               Mulai ulang
             </button>

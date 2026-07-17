@@ -107,10 +107,10 @@ export default function EditLeaderBoard() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] min-h-screen text-white p-6">
-      <div className="bg-[#142b5f] rounded-2xl border border-blue-400 shadow-lg p-6 w-full max-w-2xl">
+    <div className="flex flex-col items-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] min-h-screen text-white py-6 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#142b5f] rounded-2xl border border-blue-400 shadow-lg p-4 sm:p-6 w-full max-w-4xl">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-3xl font-bold text-center sm:text-left tracking-wide text-cyan-300">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left tracking-wide text-cyan-300">
             LEADERBOARD
           </h1>
           <button
@@ -128,7 +128,7 @@ export default function EditLeaderBoard() {
             {players.map((p, index) => (
               <li
                 key={p.id}
-                className="flex flex-col gap-4 bg-[#1e3a8a] rounded-xl px-4 py-3 shadow-md"
+                className="flex flex-col gap-4 bg-[#1e3a8a] rounded-xl px-3 sm:px-4 py-3 shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -137,19 +137,19 @@ export default function EditLeaderBoard() {
                     {index === 2 && <span className="text-2xl">🥉</span>}
                     {index > 2 && <span className="text-lg font-semibold">{index + 1}</span>}
 
-                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full overflow-hidden">
                       <img src="users.png" alt="Avatar" className="w-full h-full object-cover" />
                     </div>
 
                     <div>
-                      <span className="font-semibold">{p.name}</span>
-                      <div className="text-sm text-cyan-200">
+                      <span className="font-semibold text-sm sm:text-base">{p.name}</span>
+                      <div className="text-xs sm:text-sm text-cyan-200">
                         Permainan Ke : {p["Jumlah Permainan"]}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold">Skor {p.score}</span>
                     <button
                       className="rounded-lg bg-cyan-400 text-slate-900 px-3 py-1 text-sm font-semibold hover:bg-cyan-300"
@@ -180,8 +180,8 @@ export default function EditLeaderBoard() {
                 </div>
 
                 {String(editingPlayerId) === String(p.id) && (
-                  <div className="rounded-xl bg-[#0f2a5a] p-4">
-                    <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl bg-[#0f2a5a] p-3 sm:p-4">
+                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
                       <input
                         type="text"
                         value={editedName}
@@ -204,7 +204,7 @@ export default function EditLeaderBoard() {
                         className="w-full rounded-xl border border-slate-600 bg-[#162c59] px-3 py-2 text-white"
                       />
                     </div>
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3 flex gap-2 flex-wrap">
                       <button
                         className="rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-900 hover:bg-cyan-300"
                         onClick={() => savePlayer(p.id)}
