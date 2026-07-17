@@ -7,7 +7,7 @@ function Count() {
 
 const [step, setStep] = useState("count");
 const [players, setPlayers] = useState(2);
-const [games, setGames] = useState(1);
+const [games, setGames] = useState(2);
 const [names, setNames] = useState([]);
 const [scores, setScores] = useState([]);
 const [gamesPlayed, setGamesPlayed] = useState([]);
@@ -75,7 +75,6 @@ const syncPlayers = async () => {
 
   const savePlayersToDB = async (playerNames) => {
     try {
-      // Fetch existing players to avoid overwriting their scores
       const { data: existing, error: fetchErr } = await supabase
         .from('players')
         .select('name')
@@ -152,11 +151,11 @@ const fetchPlayers = async () => {
 
 
     const nextIndex = currentIndex + 1;
-    if (nextIndex >= players) {
+    if (nextIndex >= Number(players)) {
      await savePlayersToDB(nextNames);
    await fetchPlayers();
 setStep("done");
-      setCurrentIndex(players);
+      setCurrentIndex(Number(players));
       setCurrentName('');
       return;
     }
