@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children }) {
 
   // tidak ada session → redirect ke login
   if (!session) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // bukan admin → redirect ke home
