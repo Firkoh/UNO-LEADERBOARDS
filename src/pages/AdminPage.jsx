@@ -249,7 +249,14 @@ setStep("done");
       }
     }
 
-    Swal.fire("Berhasil", `Skor ${playerName} berhasil diperbarui`, "success");
+    Swal.fire({
+      title: "Berhasil",
+      text: `Skor ${playerName} berhasil diperbarui`,
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+      timerProgressBar: true,
+    });
   };
 
   const scoreOptions = (() => {
