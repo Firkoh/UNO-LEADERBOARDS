@@ -21,7 +21,7 @@ export default function Login() {
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email + "@gmail.com",
+      email: email.toLowerCase() + "@gmail.com",
       password,
     });
 
@@ -35,7 +35,7 @@ export default function Login() {
       return;
     }
 
-    if (data.user?.email === "admin@gmail.com" && "vio@gmail.com") {
+    if (data.user?.email === "admin@gmail.com" || "vio@gmail.com") {
       navigate("/admin");
     } else {
       navigate("/");
