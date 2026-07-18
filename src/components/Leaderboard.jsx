@@ -1,9 +1,17 @@
 // ...existing code...
 import { useEffect, useState } from "react";
 import supabase  from "../../supabase";
+import AOS from 'aos'
+import 'aos/dist/aos.css';
+
 
 export default function Leaderboard() {
   const [players, setPlayers] = useState([]);
+useEffect(() => {
+  AOS.init();
+}, []);
+
+
 
   useEffect(() => {
     // ambil data awal
@@ -60,10 +68,11 @@ export default function Leaderboard() {
             {players.map((p, index) => (
               <li
                 key={p.id}
+                data-aos="fade-up"
                 className="flex flex-col gap-4 rounded-xl bg-[#1e3a8a] px-4 py-4 shadow-md sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-3">
+                  <div  className="flex items-center gap-3" >
                     {/* Medali untuk 3 besar */}
                     {index === 0 && <span className="text-4xl">🥇</span>}
                     {index === 1 && <span className="text-3xl">🥈</span>}
