@@ -35,7 +35,7 @@ export default function Login() {
       return;
     }
 
-    if (data.user?.email === "admin@gmail.com") {
+    if (data.user?.email === "admin@gmail.com" && "vio@gmail.com") {
       navigate("/admin");
     } else {
       navigate("/");
