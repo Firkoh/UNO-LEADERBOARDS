@@ -35,12 +35,14 @@ export default function Login() {
       return;
     }
 
-    if (data.user?.email === "admin@gmail.com" || "vio@gmail.com") {
-      navigate("/admin");
-    } else {
-      navigate("/");
-    }
-  };
+    const adminEmails = ["admin@gmail.com", "vio@gmail.com"];
+const email = data.user?.email?.toLowerCase();
+
+if (adminEmails.includes(email)) {
+  navigate("/admin");
+} else {
+  navigate("/");
+}
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10 sm:px-6 md:px-8 lg:px-10 xl:px-12">
