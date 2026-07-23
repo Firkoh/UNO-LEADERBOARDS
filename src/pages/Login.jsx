@@ -21,7 +21,7 @@ export default function Login() {
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase() + "@gmail.com",
+      email: email + "@gmail.com",
       password,
     });
 
@@ -35,14 +35,12 @@ export default function Login() {
       return;
     }
 
-    const adminEmails = ["admin@gmail.com", "vio@gmail.com"];
-const email = data.user?.email?.toLowerCase();
-
-if (adminEmails.includes(email)) {
-  navigate("/admin");
-} else {
-  navigate("/");
-}
+    if (data.user?.email === "admin@gmail.com") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10 sm:px-6 md:px-8 lg:px-10 xl:px-12">
