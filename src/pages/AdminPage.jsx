@@ -31,48 +31,17 @@ const syncPlayers = async () => {
   setGamesPlayed(data.map((p) => p["Jumlah Permainan"] ?? 0));
 };
 
-  const startInput = async () => {
-    try {
-      const selectedPlayers = Number(players) || 2;
-      const { data: dbPlayers, error } = await supabase
-        .from("players")
-        .select("name,score")
-        .order("name", { ascending: true })
-        .limit(selectedPlayers);
+  const startInput = () => {
+  const selectedPlayers = Number(players);
 
-      if (error) {
-        console.error("Gagal memuat pemain dari database:", error.message);
-      }
+  setNames(Array(selectedPlayers).fill(""));
+  setScores(Array(selectedPlayers).fill(0));
+  setGamesPlayed(Array(selectedPlayers).fill(0));
 
-      const nextNames = Array(selectedPlayers).fill('');
-      const nextScores = Array(selectedPlayers).fill(0);
-      const nextGames = Array(selectedPlayers).fill(0);
-
-      if (dbPlayers && dbPlayers.length > 0) {
-        dbPlayers.slice(0, selectedPlayers).forEach((player, idx) => {
-          nextNames[idx] = player.name || '';
-          nextScores[idx] = player.score ?? 0;
-          nextGames[idx] = player["Jumlah Permainan"] ?? 0;
-        });
-      }
-
-      setNames(nextNames);
-      setScores(nextScores);
-      setGamesPlayed(nextGames);
-      setCurrentIndex(0);
-      setCurrentName(nextNames[0] || '');
-      setStep('names');
-    } catch (error) {
-      console.error("Gagal memulai input dari database:", error);
-      const selectedPlayers = Number(players) || 2;
-      setNames(Array(selectedPlayers).fill(''));
-      setScores(Array(selectedPlayers).fill(0));
-      setCurrentIndex(0);
-      setCurrentName('');
-      setStep('names');
-    }
-  };
-
+  setCurrentIndex(0);
+  setCurrentName("");
+  setStep("names");
+};
   const savePlayersToDB = async (playerNames) => {
     try {
       const { data: existing, error: fetchErr } = await supabase
@@ -103,6 +72,43 @@ const syncPlayers = async () => {
       console.error('Gagal menyimpan pemain:', e);
     }
   };
+
+useEffect(() => {
+  const channel = supabase.channel("admin-reset");
+
+  channel.on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "players",
+    },
+    async () => {
+      const { count, error } = await supabase
+        .from("players")
+        .select("*", { count: "exact", head: true });
+
+      if (error) return;
+
+      if (count === 0) {
+        setNames([]);
+        setScores([]);
+        setGamesPlayed([]);
+        setCurrentIndex(0);
+        setCurrentName("");
+        setStep("count"); // kembali ke halaman mulai
+      }
+    }
+  );
+
+  channel.subscribe();
+
+  return () => {
+    channel.unsubscribe();
+  };
+}, []);
+
+
   useEffect(() => {
   const channel = supabase.channel("players-admin");
 
@@ -126,20 +132,22 @@ const syncPlayers = async () => {
 }, [step]);
 
 const fetchPlayers = async () => {
+  const currentNames = names.filter((name) => name.trim() !== "");
+  if (currentNames.length === 0) return;
+
   const { data, error } = await supabase
     .from("players")
-    .select('name, score, "Jumlah Permainan"')
-    .order("name", { ascending: true });
+    .select("name, score")
+    .in("name", currentNames);
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+  if (error) return;
 
-  setNames(data.map((p) => p.name));
-  setScores(data.map((p) => p.score));
-  setGamesPlayed(data.map((p) => p["Jumlah Permainan"] ?? 0));
-  setPlayers(data.length);
+  const scoreMap = (data || []).reduce((acc, player) => {
+    acc[player.name] = player.score ?? 0;
+    return acc;
+  }, {});
+
+  setScores(names.map((name, index) => scoreMap[name] ?? scores[index] ?? 0));
 };
 
   const handleNext = async () => {
@@ -152,9 +160,8 @@ const fetchPlayers = async () => {
 
     const nextIndex = currentIndex + 1;
     if (nextIndex >= Number(players)) {
-     await savePlayersToDB(nextNames);
-   await fetchPlayers();
-setStep("done");
+      await savePlayersToDB(nextNames);
+      setStep("done");
       setCurrentIndex(Number(players));
       setCurrentName('');
       return;
@@ -338,7 +345,8 @@ setStep("done");
       .delete()
       .neq("id", -1);
 
-    if (error) console.log(error);
+    if (error) {console.log(error)}
+  
   };
 
   return (
