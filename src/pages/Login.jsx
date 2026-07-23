@@ -20,8 +20,16 @@ export default function Login() {
       return;
     }
 
+    const removeGmailSuffix = (value) => {
+      if (!value) return value;
+      let hapus = value.endsWith("@gmail.com") ? value.slice(0, -"@gmail.com".length) : value;
+      return hapus;
+    };
+
+    const finalEmail = removeGmailSuffix(email) + "@gmail.com";
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email + "@gmail.com",
+      email: finalEmail,
       password,
     });
 
@@ -35,11 +43,8 @@ export default function Login() {
       return;
     }
 
-    if (data.user?.email === "admin@gmail.com") {
-      navigate("/admin");
-    } else {
-      navigate("/");
-    }
+    
+    navigate("/admin");
   };
 
   return (

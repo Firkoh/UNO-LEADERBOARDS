@@ -23,10 +23,5 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/" replace />;
   }
 
-  // bukan admin → redirect ke home
-  if (session.user.email !== "admin@gmail.com") {
-    return <Navigate to="/" replace />;
-  }
-
   return children;
 }
