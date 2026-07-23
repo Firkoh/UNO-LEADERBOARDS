@@ -350,18 +350,18 @@ const fetchPlayers = async () => {
   };
 
   return (
-    <div draggable="false" className="min-h-screen bg-linear-to-br from-[#0a1f44] to-[#1a2a6c] px-4 py-10 sm:px-6 lg:px-8 text-white">
+    <div draggable="false" className="min-h-screen bg-linear-to-br from-[#FB6C00] to-[#E73F1E] px-4 py-10 sm:px-6 lg:px-8 text-[#E73F1E]">
       <div className="mx-auto w-full max-w-4xl">
-        <h2 className="text-2xl font-semibold mb-4 text-yellow-300 sm:text-3xl">Masukkan nama pemain satu per satu</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-[#FFDD9C] sm:text-3xl">Masukkan nama pemain satu per satu</h2>
 
         {step === 'count' && (
-        <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <label className="block text-base font-medium text-slate-700">
+        <div className="space-y-4 rounded-2xl border border-slate-200 bg-[#E73F1E] p-5 shadow-sm">
+          <label className="block text-base font-medium text-[#FFDD9C]">
             Berapa jumlah pemain?
             <select
               value={players}
               onChange={(e) => setPlayers(Number(e.target.value))}
-              className="mt-2 block w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-slate-900 shadow-sm focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+              className="mt-2 block w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-[#E73F1E] shadow-sm focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
             >
               <option value={2}>2</option>
               <option value={3}>3</option>
@@ -383,14 +383,14 @@ const fetchPlayers = async () => {
       )}
 
       {step === 'names' && (
-        <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="mb-3 text-lg font-medium text-slate-800">Pemain ke-{currentIndex + 1}</p>
+        <div className="mt-3 rounded-2xl border border-slate-200 bg-[#E73F1E] p-5 shadow-sm">
+          <p className="mb-3 text-lg font-medium text-[#F9B637] shad">Pemain ke-{currentIndex + 1}</p>
           <input
             type="text"
             value={currentName}
             onChange={(e) => setCurrentName(e.target.value)}
             placeholder={`Nama pemain ${currentIndex + 1}`}
-            className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-slate-900 shadow-sm focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
+            className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-[#E73F1E] shadow-sm focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-200"
           />
           <div className="mt-2">
             <button
@@ -405,8 +405,8 @@ const fetchPlayers = async () => {
       )}
 
       {step === 'done' && (
-        <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-4 text-xl font-semibold text-slate-800">Daftar pemain dan skor</h3>
+        <div className="mt-3 rounded-2xl border border-slate-200 bg-[#E73F1E] p-5 shadow-sm">
+          <h3 className="mb-4 text-xl font-semibold text-[#FFDD9C]">Daftar pemain dan skor</h3>
           {names.map((playerName, i) => (
             <div key={`${i}-${playerName}`} className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
               <div className="mb-3 text-base text-slate-800 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -471,14 +471,14 @@ const fetchPlayers = async () => {
                   console.error("Gagal memuat skor dari database:", e);
                 }
               }}
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-[#F9B637] px-4 py-2 text-[#E73F1E] transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               Muat ulang skor
             </button>
             <button
               type="button"
               onClick={resetAll}
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-200 px-4 py-2 text-slate-900 transition hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-slate-200 px-4 py-2 text-[#F9B637] transition hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               Mulai ulang
             </button>

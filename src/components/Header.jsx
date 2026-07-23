@@ -4,7 +4,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 bg-slate-900 text-white shadow-md z-50">
+    <header className="sticky top-0 bg-[#F9B637] text-[#E73F1E] shadow-md z-50">
       <nav className="max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <img src="/Uno.png" alt="UNO icon" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10" />
@@ -16,9 +16,9 @@ const Header = () => {
           className="md:hidden flex flex-col gap-1.5 focus:outline-none"
           aria-label="Toggle menu"
         >
-          <span className="w-6 h-0.5 bg-white transition-transform duration-300"></span>
-          <span className="w-6 h-0.5 bg-white transition-transform duration-300"></span>
-          <span className="w-6 h-0.5 bg-white transition-transform duration-300"></span>
+          <span className="w-6 h-0.5 bg-[#E73F1E] transition-transform duration-300"></span>
+          <span className="w-6 h-0.5 bg-[#E73F1E] transition-transform duration-300"></span>
+          <span className="w-6 h-0.5 bg-[#E73F1E] transition-transform duration-300"></span>
         </button>
 
         <ul className="hidden md:flex items-center gap-6 text-sm sm:text-base">

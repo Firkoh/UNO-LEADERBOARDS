@@ -43,35 +43,34 @@ export default function Login() {
       return;
     }
 
-    
     navigate("/admin");
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10 sm:px-6 md:px-8 lg:px-10 xl:px-12">
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-xl p-6 sm:p-8 lg:p-10">
+    <div className="min-h-screen bg-[#FFDD9C] flex items-center justify-center px-4 py-10 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl bg-[#E73F1E] border border-[#FB6C00] rounded-3xl shadow-xl p-6 sm:p-8 lg:p-10">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">Login Admin</h1>
-          <p className="mt-2 text-sm text-slate-500 sm:text-base">Masuk untuk mengelola data UNO</p>
+          <h1 className="text-3xl font-semibold text-[#F9B637] sm:text-4xl">Login Admin</h1>
+          <p className="mt-2 text-sm text-[#FFDD9C] sm:text-base">Masuk untuk mengelola data UNO</p>
         </div>
 
         <div className="space-y-5">
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Username</span>
+            <span className="text-sm font-medium text-[#FFDD9C]">Username</span>
             <input
               type="text"
-              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="mt-2 w-full rounded-2xl border border-[#FB6C00] bg-[#FFDD9C] px-4 py-3 text-[#E73F1E] outline-none transition focus:border-[#FB6C00] focus:bg-[#FFDD9C] focus:ring-2 focus:ring-[#F9B637]/30"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-slate-700">Password</span>
+            <span className="text-sm font-medium text-[#FFDD9C]">Password</span>
             <input
               type="password"
               placeholder="Password"
-              className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="mt-2 w-full rounded-2xl border border-[#FB6C00] bg-[#FFDD9C] px-4 py-3 text-[#E73F1E] outline-none transition focus:border-[#FB6C00] focus:bg-[#FFDD9C] focus:ring-2 focus:ring-[#F9B637]/30"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -79,7 +78,7 @@ export default function Login() {
 
           <button
             onClick={handleLogin}
-            className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-base sm:text-lg font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full rounded-2xl bg-[#FB6C00] px-4 py-3 text-base sm:text-lg font-semibold text-[#FFDD9C] shadow-sm transition hover:bg-[#E73F1E] focus:outline-none focus:ring-2 focus:ring-[#F9B637] focus:ring-offset-2 focus:ring-offset-[#FFDD9C]"
           >
             Login
           </button>

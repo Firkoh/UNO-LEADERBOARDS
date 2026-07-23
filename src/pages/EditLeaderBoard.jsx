@@ -119,10 +119,10 @@ export default function EditLeaderBoard() {
   };
 
   return (
-    <div className="flex flex-col items-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] min-h-screen text-white py-6 px-4 sm:px-6 lg:px-8">
-      <div className="bg-[#142b5f] rounded-2xl border border-blue-400 shadow-lg p-4 sm:p-6 w-full max-w-4xl">
+    <div className="flex flex-col items-center bg-linear-to-br from-[#FB6C00] to-[#F9B637] min-h-screen text-[#E73F1E] py-6 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#FFDD9C] rounded-2xl border border-blue-400 shadow-lg p-4 sm:p-6 w-full max-w-4xl">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left tracking-wide text-cyan-300">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left tracking-wide text-[#E73F1E]">
             LEADERBOARD
           </h1>
           <button
@@ -134,13 +134,13 @@ export default function EditLeaderBoard() {
         </div>
 
         {players.length === 0 ? (
-          <div className="text-center py-8 text-cyan-200">Belum ada Pemain</div>
+          <div className="text-center py-8 text-[#E73F1E]">Belum ada Pemain</div>
         ) : (
           <ul className="space-y-4">
             {players.map((p, index) => (
               <li
                 key={p.id}
-                className="flex flex-col gap-4 bg-[#1e3a8a] rounded-xl px-3 sm:px-4 py-3 shadow-md"
+                className="flex flex-col gap-4 bg-[#FFDD9C] rounded-xl px-3 sm:px-4 py-3 shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function EditLeaderBoard() {
 
                     <div>
                       <span className="font-semibold text-sm sm:text-base">{p.name}</span>
-                      <div className="text-xs sm:text-sm text-cyan-200">
+                      <div className="text-xs sm:text-sm text-[#E73F1E]">
                         Permainan Ke : {p["Jumlah Permainan"]}
                       </div>
                     </div>
@@ -164,7 +164,7 @@ export default function EditLeaderBoard() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold">Skor {p.score}</span>
                     <button
-                      className="rounded-lg bg-cyan-400 text-slate-900 px-3 py-1 text-sm font-semibold hover:bg-cyan-300"
+                      className="rounded-lg bg-green-800 text-[#F9B637] px-3 py-1 text-sm font-semibold hover:bg-[#E73F1E]"
                       onClick={() => startEditing(p)}
                     >
                       Edit
@@ -197,39 +197,39 @@ export default function EditLeaderBoard() {
                 </div>
 
                 {String(editingPlayerId) === String(p.id) && (
-                  <div className="rounded-xl bg-[#0f2a5a] p-3 sm:p-4">
+                  <div className="rounded-xl bg-[#E73F1E] p-3 sm:p-4">
                     <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
                       <input
                         type="text"
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
                         placeholder="Nama Pemain"
-                        className="w-full rounded-xl border border-slate-600 bg-[#162c59] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-slate-600 bg-[#F9B637] px-3 py-2 text-[#E73F1E]"
                       />
                       <input
                         type="number"
                         value={editedScore}
                         onChange={(e) => setEditedScore(e.target.value)}
                         placeholder="Skor"
-                        className="w-full rounded-xl border border-slate-600 bg-[#162c59] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-slate-600 bg-[#F9B637] px-3 py-2 text-[#E73F1E]"
                       />
                       <input
                         type="number"
                         value={editedJumlahPermainan}
                         onChange={(e) => setEditedJumlahPermainan(e.target.value)}
                         placeholder="Jumlah Permainan"
-                        className="w-full rounded-xl border border-slate-600 bg-[#162c59] px-3 py-2 text-white"
+                        className="w-full rounded-xl border border-slate-600 bg-[#F9B637] px-3 py-2 text-[#E73F1E]"
                       />
                     </div>
                     <div className="mt-3 flex gap-2 flex-wrap">
                       <button
-                        className="rounded-lg bg-cyan-400 px-4 py-2 font-semibold text-slate-900 hover:bg-cyan-300"
+                        className="rounded-lg bg-green-400 px-4 py-2 font-semibold text-white hover:bg-[#E73F1E]"
                         onClick={() => savePlayer(p.id)}
                       >
                         Simpan
                       </button>
                       <button
-                        className="rounded-lg bg-slate-700 px-4 py-2 font-semibold text-white hover:bg-slate-600"
+                        className="rounded-lg bg-red-700 px-4 py-2 font-semibold text-white hover:bg-slate-600"
                         onClick={cancelEditing}
                       >
                         Batal

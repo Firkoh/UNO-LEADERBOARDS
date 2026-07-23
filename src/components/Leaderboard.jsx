@@ -53,23 +53,23 @@ useEffect(() => {
 
   return (
 
-    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-[#0a1f44] to-[#1b2a6b] text-white p-4 sm:p-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-br from-[#FB6C00] to-[#F9B637] text-[#E73F1E] p-4 sm:p-6">
 
-      <div className="w-full max-w-full rounded-2xl border border-blue-400 bg-[#142b5f] px-4 py-6 shadow-lg sm:px-6 md:px-8 lg:px-10 xl:px-12">
-        <h1 className="text-3xl font-bold text-center tracking-wide text-cyan-300 sm:text-4xl mb-6">
+      <div className="w-full max-w-full rounded-2xl border border-blue-400 bg-[#FFDD9C] px-4 py-6 shadow-lg sm:px-6 md:px-8 lg:px-10 xl:px-12">
+        <h1 className="text-3xl font-bold text-center tracking-wide text-[#E73F1E] sm:text-4xl mb-6">
           LEADERBOARD
         </h1>
 
         {/* Jika tidak ada data tampilkan pesan */}
         {players.length === 0 ? (
-          <div className="text-center py-8 text-cyan-200">Belum ada Pemain</div>
+          <div className="text-center py-8 text-[#E73F1E]">Belum ada Pemain</div>
         ) : (
           <ul className="space-y-4">
             {players.map((p, index) => (
               <li
                 key={p.id}
                 data-aos="fade-up"
-                className="flex flex-col gap-4 rounded-xl bg-[#1e3a8a] px-4 py-4 shadow-md sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4"
+                className="flex flex-col gap-4 rounded-xl border-[#E73F1E] bg-[#FFDD9C] px-4 py-4 shadow-md sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div  className="flex items-center gap-3" >
@@ -88,7 +88,7 @@ useEffect(() => {
                   {/* Nama pemain */}
                   <div className="min-w-0">
                     <span className="font-semibold truncate block">{p.name}</span>
-                    <div className="text-sm text-cyan-200">Permainan Ke : {p["Jumlah Permainan"]}</div>
+                    <div className="text-sm text-[#E73F1E]">Permainan Ke : {p["Jumlah Permainan"]}</div>
                   </div>
                 </div>
 
